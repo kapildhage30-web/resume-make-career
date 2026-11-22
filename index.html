@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATS Resume Maker – Turn your old resume into an ATS-friendly PDF</title>
+<meta name="description" content="Upload your old resume and get a clean, ATS-friendly resume PDF in minutes. Free preview.">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<style>
+:root{--ac:#4f46e5;--ac2:#7c3aed;--tx:#0f172a;--mu:#64748b;--bd:#e2e8f0;--bg:#f8fafc}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;color:var(--tx);background:#fff;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--ac);text-decoration:none}.w{max-width:1040px;margin:0 auto;padding:0 20px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0}
+.logo{font-weight:800;font-size:19px;color:var(--tx)}.logo span{color:var(--ac)}
+.nl a{margin-left:20px;color:var(--mu);font-size:15px}
+.hero{background:linear-gradient(135deg,#eef2ff,#f5f3ff 60%,#fff);padding:56px 0 64px;text-align:center}
+.badge{display:inline-block;background:#fff;border:1px solid var(--bd);border-radius:99px;padding:5px 14px;font-size:13px;color:var(--ac);font-weight:600}
+h1{font-size:clamp(30px,5vw,50px);line-height:1.15;margin:18px auto 14px;max-width:760px;letter-spacing:-.02em}
+h1 em{font-style:normal;background:linear-gradient(90deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mu);font-size:18px;max-width:600px;margin:0 auto 26px}
+.btn{display:inline-block;background:linear-gradient(90deg,var(--ac),var(--ac2));color:#fff;border:0;border-radius:12px;padding:14px 26px;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 8px 20px rgba(79,70,229,.28)}
+.btn:disabled{opacity:.6;cursor:wait}.btn.o{background:#fff;color:var(--ac);border:1px solid var(--ac);box-shadow:none}
+.trust{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:22px;color:var(--mu);font-size:14px}
+section{padding:54px 0}h2{font-size:30px;text-align:center;margin:0 0 8px;letter-spacing:-.01em}.lead{text-align:center;color:var(--mu);margin:0 0 30px}
+.steps,.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.c{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:22px}
+.n{width:36px;height:36px;border-radius:50%;background:#eef2ff;color:var(--ac);font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.c h3{margin:0 0 6px;font-size:18px}.c p{margin:0;color:var(--mu);font-size:15px}
+#tool{background:var(--bg)}
+.box{background:#fff;border:1px solid var(--bd);border-radius:18px;padding:24px;margin:0 auto 18px;max-width:860px;box-shadow:0 4px 18px rgba(15,23,42,.05)}
+.drop{border:2px dashed #c7d2fe;background:#f5f7ff;border-radius:14px;padding:34px 16px;text-align:center;cursor:pointer;transition:.2s}
+.drop:hover{border-color:var(--ac);background:#eef2ff}.drop b{display:block;font-size:17px}.drop small{color:var(--mu)}
+.or{text-align:center;color:var(--mu);font-size:13px;margin:14px 0}
+label{display:block;font-size:13px;font-weight:600;color:#334155;margin:12px 0 4px}
+input,textarea{width:100%;padding:11px 12px;border:1px solid var(--bd);border-radius:10px;font:inherit;color:var(--tx);background:#fff}
+input:focus,textarea:focus{outline:2px solid #c7d2fe;border-color:var(--ac)}textarea{min-height:90px;resize:vertical}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+#st{margin-top:12px;font-size:14px;color:var(--mu)}
+.hid{display:none}
+.pv{position:relative;background:#fff;color:#000;border:1px solid var(--bd);border-radius:10px;padding:30px;overflow:hidden;user-select:none;box-shadow:inset 0 0 0 4px #f1f5f9}
+.pv::after{content:"PREVIEW";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 90px Arial;color:rgba(79,70,229,.09);transform:rotate(-28deg);pointer-events:none}
+.pay{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:18px;padding:16px;background:#f5f7ff;border-radius:14px}
+.price{font-size:26px;font-weight:800;color:var(--ac)}
+.faq{max-width:760px;margin:0 auto}details{border:1px solid var(--bd);border-radius:12px;padding:14px 18px;margin-bottom:10px;background:#fff}
+summary{cursor:pointer;font-weight:600}details p{color:var(--mu);margin:10px 0 0}
+footer{background:#0f172a;color:#cbd5e1;padding:34px 0;font-size:14px;text-align:center}
+footer a{color:#e2e8f0;margin:0 10px}footer p{margin:10px 0 0;color:#94a3b8}
+@media(max-width:720px){.steps,.feat,.g2{grid-template-columns:1fr}.nl{display:none}.pv{padding:16px}.pv::after{font-size:48px}}
+</style></head><body>
+<div class="w"><nav><div class="logo">ATS<span>Resume</span>Maker</div><div class="nl"><a href="#how">How it works</a><a href="#faq">FAQ</a><a href="#tool">Start</a></div></nav></div>
+
+<header class="hero"><div class="w">
+ <span class="badge">✨ AI-powered • Free preview</span>
+ <h1>Turn your old resume into an <em>ATS-friendly</em> resume in minutes</h1>
+ <p class="sub">Upload your current resume. We rewrite it in a clean, recruiter-friendly format that applicant tracking systems can read. Download as a PDF.</p>
+ <a class="btn" href="#tool">Upload your resume</a>
+ <div class="trust"><span>✓ Single-column ATS layout</span><span>✓ PDF with selectable text</span><span>✓ Pay only to download</span></div>
+</div></header>
+
+<section id="how"><div class="w">
+ <h2>How it works</h2><p class="lead">Three simple steps</p>
+ <div class="steps">
+  <div class="c"><div class="n">1</div><h3>Upload</h3><p>Upload your old resume (PDF, DOCX or TXT) or paste the text.</p></div>
+  <div class="c"><div class="n">2</div><h3>We improve it</h3><p>AI organises it into an ATS-friendly format with clear sections and stronger wording. You can edit everything.</p></div>
+  <div class="c"><div class="n">3</div><h3>Download PDF</h3><p>Preview for free. Pay <span class="price">₹79</span> once to download the clean PDF.</p></div>
+ </div>
+</div></section>
+
+<section style="background:#fff;padding-top:0"><div class="w">
+ <h2>Why ATS-friendly?</h2><p class="lead">Many companies filter resumes with software before a person sees them.</p>
+ <div class="feat">
+  <div class="c"><h3>📄 Clean layout</h3><p>No tables, columns or graphics that confuse ATS software.</p></div>
+  <div class="c"><h3>🔤 Standard headings</h3><p>Summary, Skills, Experience and Education headings that systems recognise.</p></div>
+  <div class="c"><h3>✏️ Fully editable</h3><p>Review and change every line before you pay and download.</p></div>
+ </div>
+</div></section>
+
+<section id="tool"><div class="w">
+ <h2>Create your resume</h2><p class="lead">Free preview. No sign-up needed.</p>
+ <div class="box">
+  <div class="drop" id="drop"><b>⬆️ Click to upload your old resume</b><small>PDF, DOCX or TXT</small></div>
+  <input type="file" id="f" accept=".pdf,.docx,.txt" class="hid">
+  <div class="or">— or paste your resume text —</div>
+  <textarea id="raw" placeholder="Paste your resume text here..."></textarea>
+  <div style="margin-top:14px"><button class="btn" id="go">✨ Create ATS Resume (Free Preview)</button></div><div id="st"></div>
+ </div>
+
+ <div class="box hid" id="ed"><h3 style="margin:0 0 6px">Review & edit your details</h3>
+  <div class="g2"><div><label>Full name</label><input id="name"></div><div><label>Job title</label><input id="title"></div>
+  <div><label>Email</label><input id="email"></div><div><label>Phone</label><input id="phone"></div>
+  <div><label>Location</label><input id="loc"></div><div><label>LinkedIn / Portfolio</label><input id="links"></div></div>
+  <label>Professional summary</label><textarea id="summary"></textarea>
+  <label>Skills (comma separated)</label><textarea id="skills"></textarea>
+  <label>Work experience (start bullets with "- ")</label><textarea id="exp" style="min-height:170px"></textarea>
+  <label>Projects</label><textarea id="proj"></textarea>
+  <label>Education</label><textarea id="edu"></textarea>
+  <label>Certifications & achievements</label><textarea id="cert"></textarea>
+  <div style="margin-top:14px"><button class="btn o" id="up">🔄 Update preview</button></div>
+ </div>
+
+ <div class="box hid" id="pvc"><h3 style="margin:0 0 12px">Preview</h3><div class="pv" id="pv"></div>
+  <div class="pay"><div><div class="price">₹79</div><small style="color:var(--mu)">One-time • PDF download • UPI, cards, netbanking</small></div>
+  <button class="btn" id="pay">Pay & Download PDF</button></div>
+  <div id="ps" style="margin-top:10px;font-size:14px;color:var(--mu)"></div></div>
+</div></section>
+
+<section id="faq" style="background:#fff"><div class="w"><h2>FAQ</h2><p class="lead">Quick answers</p><div class="faq">
+ <details><summary>Is the preview really free?</summary><p>Yes. You only pay when you want to download the clean PDF.</p></details>
+ <details><summary>Does it guarantee a job or interview?</summary><p>No. It improves the format so ATS software can read your resume, but hiring decisions depend on employers.</p></details>
+ <details><summary>Is my resume stored?</summary><p>We do not keep your resume on our servers. Text is sent to an AI service only to format it. See our <a href="/privacy.html">Privacy Policy</a>.</p></details>
+ <details><summary>Which payment methods work?</summary><p>UPI, debit/credit cards and netbanking through Razorpay.</p></details>
+ <details><summary>What if something goes wrong after payment?</summary><p>Contact us with your payment ID. See our <a href="/refund.html">Refund Policy</a>.</p></details>
+</div></div></section>
+
+<footer><div class="w">
+ <div><a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms & Conditions</a><a href="/refund.html">Refund Policy</a></div>
+ <p>Contact: <a href="mailto:kapildhage30@gmail.com">kapildhage30@gmail.com</a></p>
+ <p>© ATS Resume Maker • Operated by Mayuri Kapil Dhage, India</p>
+</div></footer>
+<script>
+const $=id=>document.getElementById(id),F=["name","title","email","phone","loc","links","summary","skills","exp","proj","edu","cert"];
+const esc=s=>(s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+try{pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"}catch(e){}
+$("drop").onclick=()=>$("f").click();
+$("f").onchange=async e=>{const f=e.target.files[0];if(!f)return;$("st").textContent="Reading your file...";
+ try{const n=f.name.toLowerCase();let t="";
+  if(n.endsWith(".pdf")){const d=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
+   for(let i=1;i<=d.numPages;i++){const p=await(await d.getPage(i)).getTextContent();let last=null,line="";
+    for(const x of p.items){const y=Math.round(x.transform[5]);if(last!==null&&Math.abs(y-last)>3){t+=line.trim()+"\n";line=""}line+=x.str+" ";last=y}
+    t+=line.trim()+"\n\n"}}
+  else if(n.endsWith(".docx"))t=(await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()})).value;
+  else t=await f.text();
+  $("raw").value=t.trim();$("st").textContent="✅ "+f.name+" loaded. Now click Create ATS Resume.";
+ }catch(x){$("st").textContent="❌ Could not read this file. Please paste the text instead."}};
+$("go").onclick=async()=>{const t=$("raw").value.trim();
+ if(t.length<40){$("st").textContent="Please upload your resume or paste its text first.";return}
+ $("go").disabled=true;$("st").textContent="Creating your ATS resume... this can take 15-30 seconds.";
+ let d=null,err="";
+ try{const r=await fetch("/api/improve",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:t})});
+  const j=await r.json().catch(()=>({}));if(r.ok&&j&&j.name!==undefined)d=j;else err=j.error||("status "+r.status)}catch(e){err="network"}
+ $("go").disabled=false;
+ if(!d){$("st").textContent="Sorry, we could not format your resume right now ("+err+"). Please try again in a minute.";return}
+ F.forEach(k=>$(k).value=typeof d[k]==="string"?d[k]:"");
+ $("st").textContent="✅ Done! Please review and edit below.";
+ $("ed").classList.remove("hid");render();$("ed").scrollIntoView({behavior:"smooth"})};
+function lines(s){return s.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>/^[-•*]/.test(l)?`<li style="margin:2px 0">${esc(l.replace(/^[-•*]\s*/,""))}</li>`:`<p style="margin:6px 0 2px;font-weight:bold">${esc(l)}</p>`).join("").replace(/(<li[\s\S]*?<\/li>)+/g,m=>`<ul style="margin:2px 0 4px 18px;padding:0">${m}</ul>`)}
+const sec=(h,b)=>b.trim()?`<h2 style="font:bold 13pt Arial;border-bottom:1px solid #000;margin:14px 0 6px;padding-bottom:2px;text-align:left">${h}</h2>${b}`:"";
+function render(){const v=k=>$(k).value;
+ $("pv").innerHTML=`<div style="font:11pt/1.4 Arial,Helvetica,sans-serif;max-width:720px;margin:auto;text-align:left"><h1 style="font:bold 20pt Arial;text-align:center;margin:0;max-width:none;letter-spacing:0">${esc(v("name"))}</h1><div style="text-align:center">${esc(v("title"))}</div><div style="text-align:center;font-size:10pt">${[v("email"),v("phone"),v("loc"),v("links")].filter(Boolean).map(esc).join(" | ")}</div>${sec("PROFESSIONAL SUMMARY",`<p style="margin:0">${esc(v("summary"))}</p>`)}${sec("SKILLS",`<p style="margin:0">${esc(v("skills"))}</p>`)}${sec("WORK EXPERIENCE",lines(v("exp")))}${sec("PROJECTS",lines(v("proj")))}${sec("EDUCATION",lines(v("edu")))}${sec("CERTIFICATIONS",lines(v("cert")))}</div>`;
+ $("pvc").classList.remove("hid")}
+$("up").onclick=render;
+$("pay").onclick=async()=>{$("pay").disabled=true;$("ps").textContent="Starting payment...";
+ try{const o=await(await fetch("/api/create-order",{method:"POST"})).json();if(!o.order_id)throw 0;
+  const rz=new Razorpay({key:o.key,amount:o.amount,currency:"INR",order_id:o.order_id,name:"ATS Resume Maker",description:"ATS Resume PDF",theme:{color:"#4f46e5"},
+   handler:async r=>{$("ps").textContent="Verifying payment...";
+    const data={};F.forEach(k=>data[k]=$(k).value);
+    const x=await fetch("/api/download",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:r.razorpay_order_id,payment_id:r.razorpay_payment_id,signature:r.razorpay_signature,data})});
+    const j=await x.json();if(!j.pdf){$("ps").textContent="❌ Could not verify. Please contact support with Payment ID: "+r.razorpay_payment_id;$("pay").disabled=false;return}
+    const save=(blob,ext)=>{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=($("name").value||"resume").replace(/\s+/g,"_")+"_ATS_Resume."+ext;a.click()};
+    const bin=atob(j.pdf),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+    save(new Blob([u],{type:"application/pdf"}),"pdf");window._html=j.html;
+    $("ps").innerHTML="✅ PDF downloaded! <a href='#' id='hl'>Need an HTML copy too? Click here</a>";
+    $("hl").onclick=e=>{e.preventDefault();save(new Blob([window._html],{type:"text/html"}),"html")};$("pay").disabled=false},
+   modal:{ondismiss:()=>{$("pay").disabled=false;$("ps").textContent=""}}});rz.open();
+ }catch(e){$("ps").textContent="❌ Could not start payment. Please try again.";$("pay").disabled=false}};
+fetch("/api/price").then(r=>r.json()).then(j=>{if(j.price)document.querySelectorAll(".price").forEach(e=>e.textContent="₹"+j.price)}).catch(()=>{});
+</script></body></html>

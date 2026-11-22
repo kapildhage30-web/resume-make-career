@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="hi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATS Resume Maker – Purana resume upload karo, ATS resume pao</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1b1f2a;--mu:#667085;--ac:#2563eb;--bd:#e3e6ee}
+@media(prefers-color-scheme:dark){:root{--bg:#12151c;--card:#1c212b;--tx:#eef0f5;--mu:#9aa3b5;--ac:#6b9bff;--bd:#2e3544}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,sans-serif}
+.w{max-width:960px;margin:0 auto;padding:20px 16px 60px}h1{font-size:26px;margin:8px 0}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:16px}
+.drop{border:2px dashed var(--bd);border-radius:12px;padding:26px;text-align:center;cursor:pointer}
+button{background:var(--ac);color:#fff;border:0;border-radius:10px;padding:11px 18px;font-size:15px;cursor:pointer}
+button:disabled{opacity:.5}label{display:block;font-size:13px;color:var(--mu);margin:10px 0 3px}
+input,textarea{width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+textarea{min-height:90px}.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+@media(max-width:640px){.g2{grid-template-columns:1fr}}
+.pv{position:relative;background:#fff;color:#000;border:1px solid var(--bd);border-radius:8px;padding:28px;overflow:hidden;user-select:none}
+.pv::after{content:"PREVIEW";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:bold 90px Arial;color:rgba(0,0,0,.08);transform:rotate(-30deg);pointer-events:none}
+.hid{display:none}#st{color:var(--mu);font-size:14px;margin-top:10px}
+</style></head><body><div class="w">
+<h1>📄 ATS Resume Maker</h1>
+<p style="color:var(--mu)">Apna purana resume upload karo — hum use ATS-friendly resume me badal denge.</p>
+<div class="card">
+ <div class="drop" id="drop">⬆️ Purana resume upload karo (PDF / DOCX / TXT)</div>
+ <input type="file" id="f" accept=".pdf,.docx,.txt" class="hid">
+ <label>Ya resume text paste karo</label><textarea id="raw"></textarea>
+ <div style="margin-top:12px"><button id="go">✨ ATS Resume Banao (Free Preview)</button></div><div id="st"></div>
+</div>
+<div class="card hid" id="ed"><h3 style="margin-top:0">Details check / edit karo</h3>
+ <div class="g2"><div><label>Naam</label><input id="name"></div><div><label>Job Title</label><input id="title"></div>
+ <div><label>Email</label><input id="email"></div><div><label>Phone</label><input id="phone"></div>
+ <div><label>Location</label><input id="loc"></div><div><label>LinkedIn / Portfolio</label><input id="links"></div></div>
+ <label>Summary</label><textarea id="summary"></textarea><label>Skills</label><textarea id="skills"></textarea>
+ <label>Experience (bullets "- " se)</label><textarea id="exp" style="min-height:160px"></textarea>
+ <label>Projects</label><textarea id="proj"></textarea><label>Education</label><textarea id="edu"></textarea>
+ <label>Certifications</label><textarea id="cert"></textarea>
+ <div style="margin-top:12px"><button id="up">🔄 Preview update karo</button></div></div>
+<div class="card hid" id="pvc"><h3 style="margin-top:0">Preview</h3><div class="pv" id="pv"></div>
+ <p style="margin-top:14px"><button id="pay"></button></p><div id="ps" style="color:var(--mu);font-size:14px"></div></div>
+</div>
+<script>
+const $=id=>document.getElementById(id),F=["name","title","email","phone","loc","links","summary","skills","exp","proj","edu","cert"];
+const esc=s=>(s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+$("pay").textContent="⬇️ Pay karke Download karo";
+$("drop").onclick=()=>$("f").click();
+$("f").onchange=async e=>{const f=e.target.files[0];if(!f)return;$("st").textContent="File padh rahe hain...";
+ try{const n=f.name.toLowerCase();let t="";
+  if(n.endsWith(".pdf")){const d=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
+   for(let i=1;i<=d.numPages;i++){const p=await(await d.getPage(i)).getTextContent();t+=p.items.map(x=>x.str+(x.hasEOL?"\n":" ")).join("")+"\n"}}
+  else if(n.endsWith(".docx"))t=(await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()})).value;else t=await f.text();
+  $("raw").value=t.trim();$("st").textContent="✅ File load ho gayi.";}catch(x){$("st").textContent="❌ File nahi padh paye, text paste karo."}};
+function heuristic(t){const L=t.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+ const o={name:L[0]||"",title:"",email:(t.match(/[\w.+-]+@[\w-]+\.[\w.]+/)||[""])[0],phone:(t.match(/(\+?\d[\d\s-]{8,13}\d)/)||[""])[0],loc:"",links:"",summary:"",skills:"",exp:"",proj:"",edu:"",cert:""};
+ const map=[[/^(summary|objective|profile)/i,"summary"],[/^(skills|technical skills)/i,"skills"],[/^(experience|work experience)/i,"exp"],[/^projects?/i,"proj"],[/^(education|academic)/i,"edu"],[/^(certif|achiev)/i,"cert"]];
+ let c=null;for(const l of L.slice(1)){const m=map.find(([r])=>r.test(l)&&l.length<35);if(m){c=m[1];continue}if(c)o[c]+=(o[c]?"\n":"")+l}return o}
+$("go").onclick=async()=>{const t=$("raw").value.trim();if(t.length<40){$("st").textContent="Pehle resume upload/paste karo.";return}
+ $("go").disabled=true;$("st").textContent="Resume ban raha hai...";let d=null;
+ try{const r=await fetch("/api/improve",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:t})});if(r.ok)d=await r.json()}catch(e){}
+ if(!d){d=heuristic(t);$("st").textContent="Basic mode me bana diya, details edit kar lo."}else $("st").textContent="✅ Ho gaya! Check/edit karo.";
+ F.forEach(k=>$(k).value=typeof d[k]==="string"?d[k]:"");$("ed").classList.remove("hid");render();$("go").disabled=false};
+function lines(s){return s.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>/^[-•*]/.test(l)?`<li>${esc(l.replace(/^[-•*]\s*/,""))}</li>`:`<p style="margin:6px 0 2px;font-weight:bold">${esc(l)}</p>`).join("").replace(/(<li>[\s\S]*?<\/li>)+/g,m=>`<ul style="margin:2px 0 4px 18px;padding:0">${m}</ul>`)}
+const sec=(h,b)=>b.trim()?`<h2 style="font:bold 13pt Arial;border-bottom:1px solid #000;margin:14px 0 6px">${h}</h2>${b}`:"";
+function render(){const v=k=>$(k).value;
+ $("pv").innerHTML=`<div style="font:11pt/1.4 Arial;max-width:720px;margin:auto"><h1 style="font:bold 20pt Arial;text-align:center;margin:0">${esc(v("name"))}</h1><div style="text-align:center">${esc(v("title"))}</div><div style="text-align:center;font-size:10pt">${[v("email"),v("phone"),v("loc"),v("links")].filter(Boolean).map(esc).join(" | ")}</div>${sec("PROFESSIONAL SUMMARY",`<p style="margin:0">${esc(v("summary"))}</p>`)}${sec("SKILLS",`<p style="margin:0">${esc(v("skills"))}</p>`)}${sec("WORK EXPERIENCE",lines(v("exp")))}${sec("PROJECTS",lines(v("proj")))}${sec("EDUCATION",lines(v("edu")))}${sec("CERTIFICATIONS",lines(v("cert")))}</div>`;
+ $("pvc").classList.remove("hid")}
+$("up").onclick=render;
+$("pay").onclick=async()=>{$("pay").disabled=true;$("ps").textContent="Payment shuru ho raha hai...";
+ try{const o=await(await fetch("/api/create-order",{method:"POST"})).json();if(!o.order_id)throw 0;
+  const rz=new Razorpay({key:o.key,amount:o.amount,currency:"INR",order_id:o.order_id,name:"ATS Resume Maker",description:"ATS Resume Download",theme:{color:"#2563eb"},
+   handler:async r=>{$("ps").textContent="Payment verify ho raha hai...";
+    const data={};F.forEach(k=>data[k]=$(k).value);
+    const x=await fetch("/api/download",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order_id:r.razorpay_order_id,payment_id:r.razorpay_payment_id,signature:r.razorpay_signature,data})});
+    const j=await x.json();if(!j.html){$("ps").textContent="❌ Verify nahi hua. Support se sampark karo (Payment ID: "+r.razorpay_payment_id+")";return}
+    const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([j.html],{type:"text/html"}));a.download=($("name").value||"resume").replace(/\s+/g,"_")+"_ATS_Resume.html";a.click();
+    $("ps").textContent="✅ Download ho gaya! File kholo → Print → Save as PDF.";},
+   modal:{ondismiss:()=>{$("pay").disabled=false;$("ps").textContent=""}}});rz.open();
+ }catch(e){$("ps").textContent="❌ Payment start nahi ho paya.";$("pay").disabled=false}};
+</script></body></html>
